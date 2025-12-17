@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import './game-embedded.css';
+import { useEffect, useRef } from "react";
+import "./game-embedded.css";
 
 export default function MegaKabanGame({ onClose }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !containerRef.current) return;
-    containerRef.current.innerHTML = '';
+    if (typeof window === "undefined" || !containerRef.current) return;
+    containerRef.current.innerHTML = "";
     containerRef.current.innerHTML = `
       <div class="mega-kaban-game">
         <div class="background-effects" id="backgroundEffects"></div>
@@ -77,7 +77,7 @@ export default function MegaKabanGame({ onClose }) {
       </div>
     `;
     const runGameScript = () => {
-      const gameRoot = containerRef.current.querySelector('.mega-kaban-game');
+      const gameRoot = containerRef.current.querySelector(".mega-kaban-game");
       if (!gameRoot) return;
       const $ = (id) => gameRoot.querySelector(`#${id}`);
       const $$ = (sel) => gameRoot.querySelectorAll(sel);
@@ -91,8 +91,8 @@ export default function MegaKabanGame({ onClose }) {
         const container = $(`backgroundEffects`);
         if (!container) return;
         for (let i = 0; i < 5; i++) {
-          const el = document.createElement('div');
-          el.className = 'floating-element';
+          const el = document.createElement("div");
+          el.className = "floating-element";
           el.style.width = `${Math.random() * 35 + 10}px`;
           el.style.height = el.style.width;
           el.style.left = `${Math.random() * 100}%`;
@@ -106,7 +106,7 @@ export default function MegaKabanGame({ onClose }) {
 
       const canvas = $(`gameCanvas`);
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       const scoreElement = $(`score`);
@@ -141,7 +141,7 @@ export default function MegaKabanGame({ onClose }) {
         powerUpSpawnChance: 0.009,
         comboTimeWindow: 2000,
         maxComboMultiplier: 5,
-        pointsPerLevel: 800
+        pointsPerLevel: 800,
       };
 
       let score = 0;
@@ -164,7 +164,7 @@ export default function MegaKabanGame({ onClose }) {
         shield: { active: false, timeLeft: 0, duration: 10000 },
         magnet: { active: false, timeLeft: 0, duration: 8000 },
         slowmo: { active: false, timeLeft: 0, duration: 5000 },
-        doublePoints: { active: false, timeLeft: 0, duration: 7000 }
+        doublePoints: { active: false, timeLeft: 0, duration: 7000 },
       };
 
       const playerWidth = 80;
@@ -180,7 +180,7 @@ export default function MegaKabanGame({ onClose }) {
         speed: gameSettings.initialPlayerSpeed,
         movingLeft: false,
         movingRight: false,
-        tilt: 0
+        tilt: 0,
       };
 
       let burgers = [];
@@ -188,40 +188,65 @@ export default function MegaKabanGame({ onClose }) {
       let powerUpsList = [];
       let particles = [];
 
+      function hideMainHeader() {
+        const header = gameRoot.querySelector("#mainHeader");
+        if (header) header.style.display = "none";
+      }
+
+      function showMainHeader() {
+        const header = gameRoot.querySelector("#mainHeader");
+        if (header) header.style.display = "block";
+      }
       function createFallingItem(type) {
         const x = Math.random() * (canvas.width - itemSize);
-        if (type === 'burger') {
+        if (type === "burger") {
           const burgerType = Math.random();
-          let burgerVariant = 'normal';
-          if (burgerType < 0.06) burgerVariant = 'golden';
-          else if (burgerType < 0.14) burgerVariant = 'double';
+          let burgerVariant = "normal";
+          if (burgerType < 0.06) burgerVariant = "golden";
+          else if (burgerType < 0.14) burgerVariant = "double";
           burgers.push({
-            x, y: -itemSize, width: itemSize, height: itemSize,
+            x,
+            y: -itemSize,
+            width: itemSize,
+            height: itemSize,
             speed: currentItemSpeed + Math.random() * 0.7,
             type: burgerVariant,
-            floatPhase: Math.random() * Math.PI * 2
+            floatPhase: Math.random() * Math.PI * 2,
           });
-        } else if (type === 'bomb') {
+        } else if (type === "bomb") {
           const bombType = Math.random();
-          let bombVariant = 'normal';
-          if (bombType < 0.04) bombVariant = 'black';
-          else if (bombType < 0.08) bombVariant = 'blinking';
+          let bombVariant = "normal";
+          if (bombType < 0.04) bombVariant = "black";
+          else if (bombType < 0.08) bombVariant = "blinking";
           bombs.push({
-            x, y: -itemSize, width: itemSize, height: itemSize,
+            x,
+            y: -itemSize,
+            width: itemSize,
+            height: itemSize,
             speed: currentItemSpeed + Math.random() * 0.7,
             type: bombVariant,
             blinkState: true,
             blinkTimer: 0,
-            floatPhase: Math.random() * Math.PI * 2
+            floatPhase: Math.random() * Math.PI * 2,
           });
-        } else if (type === 'powerup') {
-          const powerUpTypes = ['shield', 'magnet', 'slowmo', 'life', 'doublePoints'];
-          const powerUpType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+        } else if (type === "powerup") {
+          const powerUpTypes = [
+            "shield",
+            "magnet",
+            "slowmo",
+            "life",
+            "doublePoints",
+          ];
+          const powerUpType =
+            powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
           powerUpsList.push({
-            x, y: -itemSize, width: itemSize, height: itemSize,
+            x,
+            y: -itemSize,
+            width: itemSize,
+            height: itemSize,
             speed: currentItemSpeed + Math.random() * 0.7,
             type: powerUpType,
-            floatPhase: Math.random() * Math.PI * 2
+            floatPhase: Math.random() * Math.PI * 2,
           });
         }
       }
@@ -231,16 +256,20 @@ export default function MegaKabanGame({ onClose }) {
         const particlesToAdd = Math.min(count, maxParticles - particles.length);
         for (let i = 0; i < particlesToAdd; i++) {
           particles.push({
-            x, y, size: Math.random() * 6 + 2, color,
+            x,
+            y,
+            size: Math.random() * 6 + 2,
+            color,
             speedX: (Math.random() - 0.5) * 8,
             speedY: (Math.random() - 0.5) * 8,
-            life: 1
+            life: 1,
           });
         }
       }
 
       function drawPlayer() {
-        let shakeX = 0, shakeY = 0;
+        let shakeX = 0,
+          shakeY = 0;
         if (screenShake > 0) {
           shakeX = (Math.random() - 0.5) * screenShake;
           shakeY = (Math.random() - 0.5) * screenShake;
@@ -248,121 +277,216 @@ export default function MegaKabanGame({ onClose }) {
           if (screenShake < 0.5) screenShake = 0;
         }
         ctx.save();
-        ctx.translate(player.x + player.width/2 + shakeX, player.y + player.height/2 + shakeY);
+        ctx.translate(
+          player.x + player.width / 2 + shakeX,
+          player.y + player.height / 2 + shakeY
+        );
         ctx.rotate(player.tilt);
-        const px = -player.width/2;
-        const py = -player.height/2;
+        const px = -player.width / 2;
+        const py = -player.height / 2;
 
         if (powerUps.shield.active) {
-          ctx.strokeStyle = '#00FFFF';
+          ctx.strokeStyle = "#00FFFF";
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.arc(px + player.width/2, py + player.height/2, player.width/2 + 10, 0, Math.PI * 2);
+          ctx.arc(
+            px + player.width / 2,
+            py + player.height / 2,
+            player.width / 2 + 10,
+            0,
+            Math.PI * 2
+          );
           ctx.stroke();
           const pulse = Math.sin(Date.now() / 200) * 3;
-          ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 + pulse/10})`;
+          ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 + pulse / 10})`;
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.arc(px + player.width/2, py + player.height/2, player.width/2 + 15 + pulse, 0, Math.PI * 2);
+          ctx.arc(
+            px + player.width / 2,
+            py + player.height / 2,
+            player.width / 2 + 15 + pulse,
+            0,
+            Math.PI * 2
+          );
           ctx.stroke();
         }
 
-        const bodyGradient = ctx.createLinearGradient(px, py, px, py + player.height);
-        bodyGradient.addColorStop(0, '#e0bb7e');
-        bodyGradient.addColorStop(0.7, '#b67945');
-        bodyGradient.addColorStop(1, '#70481e');
+        const bodyGradient = ctx.createLinearGradient(
+          px,
+          py,
+          px,
+          py + player.height
+        );
+        bodyGradient.addColorStop(0, "#e0bb7e");
+        bodyGradient.addColorStop(0.7, "#b67945");
+        bodyGradient.addColorStop(1, "#70481e");
         ctx.fillStyle = bodyGradient;
         ctx.beginPath();
-        ctx.roundRect?.(px, py, player.width, player.height, 14) || ctx.rect(px, py, player.width, player.height);
+        ctx.roundRect?.(px, py, player.width, player.height, 14) ||
+          ctx.rect(px, py, player.width, player.height);
         ctx.fill();
 
-        ctx.shadowColor = 'rgba(0,0,0,0.14)';
+        ctx.shadowColor = "rgba(0,0,0,0.14)";
         ctx.shadowBlur = 12;
-        ctx.fillStyle = 'rgba(0,0,0,0.11)';
+        ctx.fillStyle = "rgba(0,0,0,0.11)";
         ctx.beginPath();
-        ctx.ellipse?.(px + player.width/2, py + player.height + 6, player.width/2.5, 7, 0, 0, Math.PI*2) || ctx.arc(px + player.width/2, py + player.height + 6, 7, 0, Math.PI*2);
+        ctx.ellipse?.(
+          px + player.width / 2,
+          py + player.height + 6,
+          player.width / 2.5,
+          7,
+          0,
+          0,
+          Math.PI * 2
+        ) ||
+          ctx.arc(
+            px + player.width / 2,
+            py + player.height + 6,
+            7,
+            0,
+            Math.PI * 2
+          );
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        ctx.fillStyle = '#cb9450';
+        ctx.fillStyle = "#cb9450";
         ctx.beginPath();
-        ctx.ellipse?.(px+10, py+4, 7, 9, 0, 0, Math.PI*2);
-        ctx.ellipse?.(px+player.width-10, py+4, 7, 9, 0, 0, Math.PI*2);
+        ctx.ellipse?.(px + 10, py + 4, 7, 9, 0, 0, Math.PI * 2);
+        ctx.ellipse?.(px + player.width - 10, py + 4, 7, 9, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#eac39a';
+        ctx.fillStyle = "#eac39a";
         ctx.beginPath();
-        ctx.ellipse?.(px+10, py+4, 4, 6, 0, 0, Math.PI*2);
-        ctx.ellipse?.(px+player.width-10, py+4, 4, 6, 0, 0, Math.PI*2);
+        ctx.ellipse?.(px + 10, py + 4, 4, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse?.(px + player.width - 10, py + 4, 4, 6, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.shadowColor = '#fffad7';
+        ctx.shadowColor = "#fffad7";
         ctx.shadowBlur = 7;
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = "white";
         ctx.beginPath();
-        ctx.arc(px+20, py+16, 5.3, 0, Math.PI*2);
-        ctx.arc(px+player.width-20, py+16, 5.3, 0, Math.PI*2);
+        ctx.arc(px + 20, py + 16, 5.3, 0, Math.PI * 2);
+        ctx.arc(px + player.width - 20, py + 16, 5.3, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        ctx.fillStyle = '#160d04';
+        ctx.fillStyle = "#160d04";
         ctx.beginPath();
-        ctx.arc(px+20, py+16, 2.5, 0, Math.PI*2);
-        ctx.arc(px+player.width-20, py+16, 2.5, 0, Math.PI*2);
+        ctx.arc(px + 20, py + 16, 2.5, 0, Math.PI * 2);
+        ctx.arc(px + player.width - 20, py + 16, 2.5, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#fff8';
+        ctx.fillStyle = "#fff8";
         ctx.beginPath();
-        ctx.arc(px+18, py+14, 1, 0, Math.PI*2);
-        ctx.arc(px+player.width-22, py+14, 1, 0, Math.PI*2);
+        ctx.arc(px + 18, py + 14, 1, 0, Math.PI * 2);
+        ctx.arc(px + player.width - 22, py + 14, 1, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = 'rgba(255,120,120,0.19)';
+        ctx.fillStyle = "rgba(255,120,120,0.19)";
         ctx.beginPath();
-        ctx.arc(px+20, py+22, 2.6, 0, Math.PI*2);
-        ctx.arc(px+player.width-20, py+22, 2.6, 0, Math.PI*2);
+        ctx.arc(px + 20, py + 22, 2.6, 0, Math.PI * 2);
+        ctx.arc(px + player.width - 20, py + 22, 2.6, 0, Math.PI * 2);
         ctx.fill();
 
-        const noseGradient = ctx.createRadialGradient(px+player.width/2, py+player.height-9, 0, px+player.width/2, py+player.height-9, 9);
-        noseGradient.addColorStop(0, '#d98c80');
-        noseGradient.addColorStop(1, '#ad544b');
+        const noseGradient = ctx.createRadialGradient(
+          px + player.width / 2,
+          py + player.height - 9,
+          0,
+          px + player.width / 2,
+          py + player.height - 9,
+          9
+        );
+        noseGradient.addColorStop(0, "#d98c80");
+        noseGradient.addColorStop(1, "#ad544b");
         ctx.fillStyle = noseGradient;
         ctx.beginPath();
-        ctx.ellipse?.(px+player.width/2, py+player.height-9, 11, 7.7, 0, 0, Math.PI*2);
+        ctx.ellipse?.(
+          px + player.width / 2,
+          py + player.height - 9,
+          11,
+          7.7,
+          0,
+          0,
+          Math.PI * 2
+        );
         ctx.fill();
 
-        ctx.fillStyle = '#603328';
+        ctx.fillStyle = "#603328";
         ctx.beginPath();
-        ctx.arc(px+player.width/2-4, py+player.height-9, 1.27, 0, Math.PI*2);
-        ctx.arc(px+player.width/2+4, py+player.height-9, 1.27, 0, Math.PI*2);
+        ctx.arc(
+          px + player.width / 2 - 4,
+          py + player.height - 9,
+          1.27,
+          0,
+          Math.PI * 2
+        );
+        ctx.arc(
+          px + player.width / 2 + 4,
+          py + player.height - 9,
+          1.27,
+          0,
+          Math.PI * 2
+        );
         ctx.fill();
 
-        ctx.strokeStyle = '#603328';
+        ctx.strokeStyle = "#603328";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(px+player.width/2, py+player.height-6.5, 5, 0.25*Math.PI, 0.75*Math.PI);
+        ctx.arc(
+          px + player.width / 2,
+          py + player.height - 6.5,
+          5,
+          0.25 * Math.PI,
+          0.75 * Math.PI
+        );
         ctx.stroke();
         ctx.restore();
       }
 
       function drawBurger(burger) {
-        const glowColor = burger.type === 'golden' ? '#ffd86f' : burger.type === 'double' ? '#ff6b6b' : 'transparent';
-        if (glowColor !== 'transparent') {
+        const glowColor =
+          burger.type === "golden"
+            ? "#ffd86f"
+            : burger.type === "double"
+            ? "#ff6b6b"
+            : "transparent";
+        if (glowColor !== "transparent") {
           ctx.shadowColor = glowColor;
-          ctx.shadowBlur = burger.type === 'golden' ? 18 : 12;
+          ctx.shadowBlur = burger.type === "golden" ? 18 : 12;
         }
-        const bunTop = burger.type === 'golden' ? '#ffb347' : burger.type === 'double' ? '#d6903b' : '#f5c07a';
-        const bunBottom = burger.type === 'golden' ? '#f29b38' : burger.type === 'double' ? '#bf7a30' : '#e3a85f';
-        const meat = burger.type === 'golden' ? '#c17b0d' : burger.type === 'double' ? '#a83232' : '#8b4b2b';
-        const lettuce = burger.type === 'golden' ? '#b7ff7a' : '#7cf074';
-        const cheese = burger.type === 'golden' ? '#ffe38a' : '#ffcf6f';
+        const bunTop =
+          burger.type === "golden"
+            ? "#ffb347"
+            : burger.type === "double"
+            ? "#d6903b"
+            : "#f5c07a";
+        const bunBottom =
+          burger.type === "golden"
+            ? "#f29b38"
+            : burger.type === "double"
+            ? "#bf7a30"
+            : "#e3a85f";
+        const meat =
+          burger.type === "golden"
+            ? "#c17b0d"
+            : burger.type === "double"
+            ? "#a83232"
+            : "#8b4b2b";
+        const lettuce = burger.type === "golden" ? "#b7ff7a" : "#7cf074";
+        const cheese = burger.type === "golden" ? "#ffe38a" : "#ffcf6f";
 
         ctx.fillStyle = bunTop;
         ctx.beginPath();
-        ctx.roundRect?.(burger.x, burger.y, burger.width, burger.height * 0.28, 12) || ctx.rect(burger.x, burger.y, burger.width, burger.height * 0.28);
+        ctx.roundRect?.(
+          burger.x,
+          burger.y,
+          burger.width,
+          burger.height * 0.28,
+          12
+        ) || ctx.rect(burger.x, burger.y, burger.width, burger.height * 0.28);
         ctx.fill();
 
-        ctx.fillStyle = '#fffaf0';
+        ctx.fillStyle = "#fffaf0";
         ctx.beginPath();
         ctx.arc(burger.x + 10, burger.y + 6, 2, 0, Math.PI * 2);
         ctx.arc(burger.x + burger.width - 12, burger.y + 10, 2, 0, Math.PI * 2);
@@ -372,86 +496,195 @@ export default function MegaKabanGame({ onClose }) {
 
         ctx.fillStyle = lettuce;
         ctx.beginPath();
-        ctx.roundRect?.(burger.x + 3, burger.y + burger.height * 0.26, burger.width - 6, burger.height * 0.22, 10) || ctx.rect(burger.x + 3, burger.y + burger.height * 0.26, burger.width - 6, burger.height * 0.22);
+        ctx.roundRect?.(
+          burger.x + 3,
+          burger.y + burger.height * 0.26,
+          burger.width - 6,
+          burger.height * 0.22,
+          10
+        ) ||
+          ctx.rect(
+            burger.x + 3,
+            burger.y + burger.height * 0.26,
+            burger.width - 6,
+            burger.height * 0.22
+          );
         ctx.fill();
 
         ctx.fillStyle = cheese;
         ctx.beginPath();
-        ctx.roundRect?.(burger.x + 4, burger.y + burger.height * 0.42, burger.width - 8, burger.height * 0.14, 8) || ctx.rect(burger.x + 4, burger.y + burger.height * 0.42, burger.width - 8, burger.height * 0.14);
+        ctx.roundRect?.(
+          burger.x + 4,
+          burger.y + burger.height * 0.42,
+          burger.width - 8,
+          burger.height * 0.14,
+          8
+        ) ||
+          ctx.rect(
+            burger.x + 4,
+            burger.y + burger.height * 0.42,
+            burger.width - 8,
+            burger.height * 0.14
+          );
         ctx.fill();
 
         ctx.fillStyle = meat;
         ctx.beginPath();
-        ctx.roundRect?.(burger.x + 6, burger.y + burger.height * 0.54, burger.width - 12, burger.height * 0.18, 8) || ctx.rect(burger.x + 6, burger.y + burger.height * 0.54, burger.width - 12, burger.height * 0.18);
+        ctx.roundRect?.(
+          burger.x + 6,
+          burger.y + burger.height * 0.54,
+          burger.width - 12,
+          burger.height * 0.18,
+          8
+        ) ||
+          ctx.rect(
+            burger.x + 6,
+            burger.y + burger.height * 0.54,
+            burger.width - 12,
+            burger.height * 0.18
+          );
         ctx.fill();
 
-        if (burger.type === 'double') {
-          ctx.fillStyle = '#903030';
+        if (burger.type === "double") {
+          ctx.fillStyle = "#903030";
           ctx.beginPath();
-          ctx.roundRect?.(burger.x + 6, burger.y + burger.height * 0.68, burger.width - 12, burger.height * 0.16, 8) || ctx.rect(burger.x + 6, burger.y + burger.height * 0.68, burger.width - 12, burger.height * 0.16);
+          ctx.roundRect?.(
+            burger.x + 6,
+            burger.y + burger.height * 0.68,
+            burger.width - 12,
+            burger.height * 0.16,
+            8
+          ) ||
+            ctx.rect(
+              burger.x + 6,
+              burger.y + burger.height * 0.68,
+              burger.width - 12,
+              burger.height * 0.16
+            );
         }
 
         ctx.fillStyle = bunBottom;
         ctx.beginPath();
-        ctx.roundRect?.(burger.x, burger.y + burger.height * 0.76, burger.width, burger.height * 0.24, 10) || ctx.rect(burger.x, burger.y + burger.height * 0.76, burger.width, burger.height * 0.24);
+        ctx.roundRect?.(
+          burger.x,
+          burger.y + burger.height * 0.76,
+          burger.width,
+          burger.height * 0.24,
+          10
+        ) ||
+          ctx.rect(
+            burger.x,
+            burger.y + burger.height * 0.76,
+            burger.width,
+            burger.height * 0.24
+          );
         ctx.fill();
-        ctx.shadowColor = 'transparent';
+        ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
       }
 
       function drawBomb(bomb) {
-        const baseColor = bomb.type === 'black' ? '#222b36' : '#d9383c';
-        const glowColor = bomb.type === 'black' ? '#ff6060' : '#ffb347';
-        if (bomb.type === 'blinking') {
+        const baseColor = bomb.type === "black" ? "#222b36" : "#d9383c";
+        const glowColor = bomb.type === "black" ? "#ff6060" : "#ffb347";
+        if (bomb.type === "blinking") {
           bomb.blinkTimer += 16;
           if (bomb.blinkTimer > 220) {
             bomb.blinkState = !bomb.blinkState;
             bomb.blinkTimer = 0;
           }
         }
-        const activeGlow = bomb.type === 'blinking' ? (bomb.blinkState ? '#ff5656' : '#ff9b4a') : glowColor;
+        const activeGlow =
+          bomb.type === "blinking"
+            ? bomb.blinkState
+              ? "#ff5656"
+              : "#ff9b4a"
+            : glowColor;
         ctx.shadowColor = activeGlow;
-        ctx.shadowBlur = bomb.type === 'black' ? 16 : 12;
-        const grad = ctx.createLinearGradient(bomb.x, bomb.y, bomb.x, bomb.y + bomb.height);
+        ctx.shadowBlur = bomb.type === "black" ? 16 : 12;
+        const grad = ctx.createLinearGradient(
+          bomb.x,
+          bomb.y,
+          bomb.x,
+          bomb.y + bomb.height
+        );
         grad.addColorStop(0, baseColor);
-        grad.addColorStop(1, bomb.type === 'black' ? '#1a1f27' : '#b52f33');
+        grad.addColorStop(1, bomb.type === "black" ? "#1a1f27" : "#b52f33");
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.roundRect?.(bomb.x, bomb.y, bomb.width, bomb.height, 12) || ctx.rect(bomb.x, bomb.y, bomb.width, bomb.height);
+        ctx.roundRect?.(bomb.x, bomb.y, bomb.width, bomb.height, 12) ||
+          ctx.rect(bomb.x, bomb.y, bomb.width, bomb.height);
         ctx.fill();
 
         ctx.fillStyle = activeGlow;
         ctx.beginPath();
-        ctx.roundRect?.(bomb.x + bomb.width * 0.18, bomb.y + bomb.height * 0.18, bomb.width * 0.64, bomb.height * 0.64, 10) || ctx.rect(bomb.x + bomb.width * 0.18, bomb.y + bomb.height * 0.18, bomb.width * 0.64, bomb.height * 0.64);
+        ctx.roundRect?.(
+          bomb.x + bomb.width * 0.18,
+          bomb.y + bomb.height * 0.18,
+          bomb.width * 0.64,
+          bomb.height * 0.64,
+          10
+        ) ||
+          ctx.rect(
+            bomb.x + bomb.width * 0.18,
+            bomb.y + bomb.height * 0.18,
+            bomb.width * 0.64,
+            bomb.height * 0.64
+          );
         ctx.fill();
 
-        ctx.fillStyle = '#2a2f3a';
+        ctx.fillStyle = "#2a2f3a";
         ctx.beginPath();
-        ctx.roundRect?.(bomb.x + bomb.width/3, bomb.y - 6, bomb.width/3, 8, 3) || ctx.rect(bomb.x + bomb.width/3, bomb.y - 6, bomb.width/3, 8);
+        ctx.roundRect?.(
+          bomb.x + bomb.width / 3,
+          bomb.y - 6,
+          bomb.width / 3,
+          8,
+          3
+        ) || ctx.rect(bomb.x + bomb.width / 3, bomb.y - 6, bomb.width / 3, 8);
         ctx.fill();
 
-        ctx.strokeStyle = '#ffd86f';
+        ctx.strokeStyle = "#ffd86f";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(bomb.x + bomb.width/2, bomb.y - 6);
-        ctx.lineTo(bomb.x + bomb.width/2, bomb.y - 16);
+        ctx.moveTo(bomb.x + bomb.width / 2, bomb.y - 6);
+        ctx.lineTo(bomb.x + bomb.width / 2, bomb.y - 16);
         ctx.stroke();
         ctx.beginPath();
-        ctx.moveTo(bomb.x + bomb.width/2 - 4, bomb.y - 12);
-        ctx.lineTo(bomb.x + bomb.width/2 + 4, bomb.y - 12);
+        ctx.moveTo(bomb.x + bomb.width / 2 - 4, bomb.y - 12);
+        ctx.lineTo(bomb.x + bomb.width / 2 + 4, bomb.y - 12);
         ctx.stroke();
-        ctx.shadowColor = 'transparent';
+        ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
       }
 
       function drawPowerUp(powerUp) {
         let color, symbol, glowColor;
         switch (powerUp.type) {
-          case 'shield': color = '#00FFFF'; glowColor = '#00DDFF'; symbol = '🛡️'; break;
-          case 'magnet': color = '#FFD700'; glowColor = '#FFAA00'; symbol = '🧲'; break;
-          case 'slowmo': color = '#9370DB'; glowColor = '#B886DB'; symbol = '🐌'; break;
-          case 'life': color = '#32CD32'; glowColor = '#00FF00'; symbol = '❤️'; break;
-          case 'doublePoints': color = '#FF1493'; glowColor = '#FF69B4'; symbol = '✯✯'; break;
+          case "shield":
+            color = "#00FFFF";
+            glowColor = "#00DDFF";
+            symbol = "🛡️";
+            break;
+          case "magnet":
+            color = "#FFD700";
+            glowColor = "#FFAA00";
+            symbol = "🧲";
+            break;
+          case "slowmo":
+            color = "#9370DB";
+            glowColor = "#B886DB";
+            symbol = "🐌";
+            break;
+          case "life":
+            color = "#32CD32";
+            glowColor = "#00FF00";
+            symbol = "❤️";
+            break;
+          case "doublePoints":
+            color = "#FF1493";
+            glowColor = "#FF69B4";
+            symbol = "✯✯";
+            break;
         }
         const pulse = Math.sin(Date.now() / 300) * 0.1 + 1;
         const size = powerUp.width * pulse;
@@ -459,30 +692,56 @@ export default function MegaKabanGame({ onClose }) {
         ctx.shadowColor = glowColor;
         ctx.shadowBlur = 20;
         const gradient = ctx.createRadialGradient(
-          powerUp.x + powerUp.width/2, powerUp.y + powerUp.height/2, 0,
-          powerUp.x + powerUp.width/2, powerUp.y + powerUp.height/2, size/2
+          powerUp.x + powerUp.width / 2,
+          powerUp.y + powerUp.height / 2,
+          0,
+          powerUp.x + powerUp.width / 2,
+          powerUp.y + powerUp.height / 2,
+          size / 2
         );
         gradient.addColorStop(0, color);
         gradient.addColorStop(1, glowColor);
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.roundRect?.(powerUp.x + offset, powerUp.y + offset, size, size, 12) || ctx.rect(powerUp.x + offset, powerUp.y + offset, size, size);
+        ctx.roundRect?.(
+          powerUp.x + offset,
+          powerUp.y + offset,
+          size,
+          size,
+          12
+        ) || ctx.rect(powerUp.x + offset, powerUp.y + offset, size, size);
         ctx.fill();
 
         ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
         ctx.beginPath();
-        ctx.roundRect?.(powerUp.x + offset + 2, powerUp.y + offset + 2, size * 0.6, size * 0.3, 8) || ctx.rect(powerUp.x + offset + 2, powerUp.y + offset + 2, size * 0.6, size * 0.3);
+        ctx.roundRect?.(
+          powerUp.x + offset + 2,
+          powerUp.y + offset + 2,
+          size * 0.6,
+          size * 0.3,
+          8
+        ) ||
+          ctx.rect(
+            powerUp.x + offset + 2,
+            powerUp.y + offset + 2,
+            size * 0.6,
+            size * 0.3
+          );
         ctx.fill();
 
-        ctx.font = 'bold 22px Arial';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.font = "bold 22px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
         ctx.shadowBlur = 3;
-        ctx.fillText(symbol, powerUp.x + powerUp.width/2, powerUp.y + powerUp.height/2);
-        ctx.shadowColor = 'transparent';
+        ctx.fillText(
+          symbol,
+          powerUp.x + powerUp.width / 2,
+          powerUp.y + powerUp.height / 2
+        );
+        ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
       }
 
@@ -506,43 +765,51 @@ export default function MegaKabanGame({ onClose }) {
       function updatePlayer() {
         const speed = player.speed;
         if (player.movingLeft) player.x = Math.max(0, player.x - speed);
-        if (player.movingRight) player.x = Math.min(canvas.width - player.width, player.x + speed);
+        if (player.movingRight)
+          player.x = Math.min(canvas.width - player.width, player.x + speed);
         const maxY = getGroundY() - playerHeight - 3;
         player.y = Math.min(player.y, maxY);
-        const targetTilt = player.movingLeft ? -0.08 : player.movingRight ? 0.08 : 0;
+        const targetTilt = player.movingLeft
+          ? -0.08
+          : player.movingRight
+          ? 0.08
+          : 0;
         player.tilt += (targetTilt - player.tilt) * 0.25;
       }
 
       function updatePowerUps() {
-        Object.keys(powerUps).forEach(key => {
+        Object.keys(powerUps).forEach((key) => {
           if (powerUps[key].active) {
             powerUps[key].timeLeft -= 16;
             const indicator = $(`${key}Indicator`);
             if (indicator) {
-              const wasActive = indicator.classList.contains('active');
+              const wasActive = indicator.classList.contains("active");
               const isActive = powerUps[key].timeLeft > 0;
               if (isActive && !wasActive) {
-                indicator.classList.add('active');
-                indicator.style.transform = 'scale(1.5)';
-                setTimeout(() => indicator.style.transform = '', 200);
+                indicator.classList.add("active");
+                indicator.style.transform = "scale(1.5)";
+                setTimeout(() => (indicator.style.transform = ""), 200);
               } else if (!isActive && wasActive) {
-                indicator.classList.remove('active');
+                indicator.classList.remove("active");
               }
-              indicator.style.opacity = Math.max(0.5, powerUps[key].timeLeft / powerUps[key].duration);
+              indicator.style.opacity = Math.max(
+                0.5,
+                powerUps[key].timeLeft / powerUps[key].duration
+              );
             }
             if (powerUps[key].timeLeft <= 0) {
               powerUps[key].active = false;
               const indicator = $(`${key}Indicator`);
               if (indicator) {
-                indicator.classList.remove('active');
-                indicator.style.opacity = '0.5';
+                indicator.classList.remove("active");
+                indicator.style.opacity = "0.5";
               }
             }
           } else {
             const indicator = $(`${key}Indicator`);
-            if (indicator && indicator.classList.contains('active')) {
-              indicator.classList.remove('active');
-              indicator.style.opacity = '0.5';
+            if (indicator && indicator.classList.contains("active")) {
+              indicator.classList.remove("active");
+              indicator.style.opacity = "0.5";
             }
           }
         });
@@ -554,19 +821,28 @@ export default function MegaKabanGame({ onClose }) {
         if (now - lastComboUpdate < 50) return;
         lastComboUpdate = now;
         const timeSince = now - lastBurgerTime;
-        const progress = Math.max(0, 1 - timeSince / gameSettings.comboTimeWindow);
+        const progress = Math.max(
+          0,
+          1 - timeSince / gameSettings.comboTimeWindow
+        );
         if (comboMultiplier > 1 && timeSince < gameSettings.comboTimeWindow) {
           comboElement.textContent = `${comboMultiplier.toFixed(1)}x`;
-          const intensity = Math.min(comboMultiplier / gameSettings.maxComboMultiplier, 1);
-          comboElement.style.color = intensity > 0.6 ? '#ff6b00' : intensity > 0.3 ? '#ff8a00' : '#fff';
-          comboElement.style.textShadow = `0 0 ${10 + intensity * 15}px ${intensity > 0.6 ? '#ff6b00' : '#ff8a00'}`;
+          const intensity = Math.min(
+            comboMultiplier / gameSettings.maxComboMultiplier,
+            1
+          );
+          comboElement.style.color =
+            intensity > 0.6 ? "#ff6b00" : intensity > 0.3 ? "#ff8a00" : "#fff";
+          comboElement.style.textShadow = `0 0 ${10 + intensity * 15}px ${
+            intensity > 0.6 ? "#ff6b00" : "#ff8a00"
+          }`;
           comboElement.style.transform = `scale(${1 + intensity * 0.1})`;
         } else {
           comboMultiplier = 1;
-          comboElement.textContent = '1x';
-          comboElement.style.color = '#fff';
-          comboElement.style.textShadow = 'none';
-          comboElement.style.transform = 'scale(1)';
+          comboElement.textContent = "1x";
+          comboElement.style.color = "#fff";
+          comboElement.style.textShadow = "none";
+          comboElement.style.transform = "scale(1)";
         }
         comboMeter.style.width = `${progress * 100}%`;
       }
@@ -574,48 +850,75 @@ export default function MegaKabanGame({ onClose }) {
       function checkCollisions() {
         for (let i = burgers.length - 1; i >= 0; i--) {
           const b = burgers[i];
-          if (player.x < b.x + b.width && player.x + player.width > b.x &&
-              player.y < b.y + b.height && player.y + player.height > b.y) {
+          if (
+            player.x < b.x + b.width &&
+            player.x + player.width > b.x &&
+            player.y < b.y + b.height &&
+            player.y + player.height > b.y
+          ) {
             const now = Date.now();
-            let points = b.type === 'golden' ? 50 : b.type === 'double' ? 20 : 10;
+            let points =
+              b.type === "golden" ? 50 : b.type === "double" ? 20 : 10;
             if (powerUps.doublePoints.active) points *= 2;
             if (now - lastBurgerTime < gameSettings.comboTimeWindow) {
-              comboMultiplier = Math.min(gameSettings.maxComboMultiplier, comboMultiplier + 0.3);
-              comboDisplay.textContent = `COMBO x${comboMultiplier.toFixed(1)}!`;
-              comboDisplay.style.display = 'block';
+              comboMultiplier = Math.min(
+                gameSettings.maxComboMultiplier,
+                comboMultiplier + 0.3
+              );
+              comboDisplay.textContent = `COMBO x${comboMultiplier.toFixed(
+                1
+              )}!`;
+              comboDisplay.style.display = "block";
               comboElement.textContent = `${comboMultiplier.toFixed(1)}x`;
-              comboElement.style.color = comboMultiplier >= 3 ? '#ff6b00' : comboMultiplier >= 2 ? '#ff8a00' : '#fff';
-              comboElement.style.textShadow = `0 0 10px ${comboMultiplier >= 3 ? '#ff6b00' : '#ff8a00'}`;
-              comboDisplay.style.animation = 'none';
-              setTimeout(() => comboDisplay.style.animation = 'pulse 0.5s infinite alternate', 10);
+              comboElement.style.color =
+                comboMultiplier >= 3
+                  ? "#ff6b00"
+                  : comboMultiplier >= 2
+                  ? "#ff8a00"
+                  : "#fff";
+              comboElement.style.textShadow = `0 0 10px ${
+                comboMultiplier >= 3 ? "#ff6b00" : "#ff8a00"
+              }`;
+              comboDisplay.style.animation = "none";
+              setTimeout(
+                () =>
+                  (comboDisplay.style.animation =
+                    "pulse 0.5s infinite alternate"),
+                10
+              );
             } else {
               comboMultiplier = 1;
-              comboDisplay.style.display = 'none';
-              comboElement.textContent = '1x';
-              comboElement.style.color = '#fff';
-              comboElement.style.textShadow = 'none';
+              comboDisplay.style.display = "none";
+              comboElement.textContent = "1x";
+              comboElement.style.color = "#fff";
+              comboElement.style.textShadow = "none";
             }
             lastBurgerTime = now;
             maxCombo = Math.max(maxCombo, comboMultiplier);
             clearTimeout(comboTimeout);
             comboTimeout = setTimeout(() => {
               comboMultiplier = 1;
-              comboDisplay.style.display = 'none';
-              comboElement.textContent = '1x';
-              comboElement.style.color = '#fff';
-              comboElement.style.textShadow = 'none';
+              comboDisplay.style.display = "none";
+              comboElement.textContent = "1x";
+              comboElement.style.color = "#fff";
+              comboElement.style.textShadow = "none";
             }, gameSettings.comboTimeWindow);
             score += Math.floor(points * comboMultiplier);
-            scoreElement.style.transform = 'scale(1.2)';
-            scoreElement.style.color = '#00ffaa';
+            scoreElement.style.transform = "scale(1.2)";
+            scoreElement.style.color = "#00ffaa";
             setTimeout(() => {
-              scoreElement.style.transform = 'scale(1)';
-              scoreElement.style.color = '#00ff88';
+              scoreElement.style.transform = "scale(1)";
+              scoreElement.style.color = "#00ff88";
             }, 200);
             scoreElement.textContent = score;
             burgersCaught++;
-            let col = b.type === 'golden' ? '#FFD700' : b.type === 'double' ? '#8B0000' : '#32CD32';
-            createParticles(b.x + b.width/2, b.y + b.height/2, col, 18);
+            let col =
+              b.type === "golden"
+                ? "#FFD700"
+                : b.type === "double"
+                ? "#8B0000"
+                : "#32CD32";
+            createParticles(b.x + b.width / 2, b.y + b.height / 2, col, 18);
             burgers.splice(i, 1);
             checkLevelUp();
           }
@@ -623,21 +926,38 @@ export default function MegaKabanGame({ onClose }) {
 
         for (let i = bombs.length - 1; i >= 0; i--) {
           const b = bombs[i];
-          if (player.x < b.x + b.width && player.x + player.width > b.x &&
-              player.y < b.y + b.height && player.y + player.height > b.y) {
+          if (
+            player.x < b.x + b.width &&
+            player.x + player.width > b.x &&
+            player.y < b.y + b.height &&
+            player.y + player.height > b.y
+          ) {
             if (!powerUps.shield.active) {
-              const damage = b.type === 'black' ? 2 : 1;
+              const damage = b.type === "black" ? 2 : 1;
               lives -= damage;
-              livesElement.style.transform = 'scale(1.3)';
-              livesElement.classList.toggle('low', lives <= 1);
-              setTimeout(() => livesElement.style.transform = 'scale(1)', 300);
+              livesElement.style.transform = "scale(1.3)";
+              livesElement.classList.toggle("low", lives <= 1);
+              setTimeout(
+                () => (livesElement.style.transform = "scale(1)"),
+                300
+              );
               livesElement.textContent = lives;
               screenShake = 15;
-              let col = b.type === 'black' ? '#2F4F4F' : b.type === 'blinking' ? '#FF4500' : '#DC143C';
-              createParticles(b.x + b.width/2, b.y + b.height/2, col, 22);
+              let col =
+                b.type === "black"
+                  ? "#2F4F4F"
+                  : b.type === "blinking"
+                  ? "#FF4500"
+                  : "#DC143C";
+              createParticles(b.x + b.width / 2, b.y + b.height / 2, col, 22);
               if (lives <= 0) gameOver();
             } else {
-              createParticles(b.x + b.width/2, b.y + b.height/2, '#00FFFF', 15);
+              createParticles(
+                b.x + b.width / 2,
+                b.y + b.height / 2,
+                "#00FFFF",
+                15
+              );
             }
             bombs.splice(i, 1);
           }
@@ -645,47 +965,61 @@ export default function MegaKabanGame({ onClose }) {
 
         for (let i = powerUpsList.length - 1; i >= 0; i--) {
           const p = powerUpsList[i];
-          if (player.x < p.x + p.width && player.x + player.width > p.x &&
-              player.y < p.y + p.height && player.y + player.height > p.y) {
-            if (p.type === 'life') {
+          if (
+            player.x < p.x + p.width &&
+            player.x + player.width > p.x &&
+            player.y < p.y + p.height &&
+            player.y + player.height > p.y
+          ) {
+            if (p.type === "life") {
               lives = Math.min(5, lives + 1);
-              livesElement.style.transform = 'scale(1.3)';
-              livesElement.style.color = '#00ff00';
+              livesElement.style.transform = "scale(1.3)";
+              livesElement.style.color = "#00ff00";
               setTimeout(() => {
-                livesElement.style.transform = 'scale(1)';
-                livesElement.style.color = '#D9686A';
+                livesElement.style.transform = "scale(1)";
+                livesElement.style.color = "#D9686A";
               }, 300);
-              livesElement.classList.remove('low');
+              livesElement.classList.remove("low");
               livesElement.textContent = lives;
             } else {
               powerUps[p.type].active = true;
               powerUps[p.type].timeLeft = powerUps[p.type].duration;
               const ind = $(`${p.type}Indicator`);
               if (ind) {
-                ind.classList.add('active');
-                ind.style.opacity = '1';
-                ind.style.transform = 'scale(1.5) rotate(360deg)';
-                setTimeout(() => ind.style.transform = '', 300);
+                ind.classList.add("active");
+                ind.style.opacity = "1";
+                ind.style.transform = "scale(1.5) rotate(360deg)";
+                setTimeout(() => (ind.style.transform = ""), 300);
               }
             }
             let col;
-            switch(p.type) {
-              case 'shield': col = '#00FFFF'; break;
-              case 'magnet': col = '#FFD700'; break;
-              case 'slowmo': col = '#9370DB'; break;
-              case 'life': col = '#32CD32'; break;
-              case 'doublePoints': col = '#FF1493'; break;
+            switch (p.type) {
+              case "shield":
+                col = "#00FFFF";
+                break;
+              case "magnet":
+                col = "#FFD700";
+                break;
+              case "slowmo":
+                col = "#9370DB";
+                break;
+              case "life":
+                col = "#32CD32";
+                break;
+              case "doublePoints":
+                col = "#FF1493";
+                break;
             }
-            createParticles(p.x + p.width/2, p.y + p.height/2, col, 15);
+            createParticles(p.x + p.width / 2, p.y + p.height / 2, col, 15);
             powerUpsList.splice(i, 1);
           }
         }
         updateComboDisplay();
         if (powerUps.magnet.active) {
-          burgers.forEach(b => {
-            const dx = (player.x + player.width/2) - (b.x + b.width/2);
-            const dy = (player.y + player.height/2) - (b.y + b.height/2);
-            const d = Math.sqrt(dx*dx + dy*dy);
+          burgers.forEach((b) => {
+            const dx = player.x + player.width / 2 - (b.x + b.width / 2);
+            const dy = player.y + player.height / 2 - (b.y + b.height / 2);
+            const d = Math.sqrt(dx * dx + dy * dy);
             if (d < 150) {
               b.x += dx * 0.08;
               b.y += dy * 0.08;
@@ -699,17 +1033,20 @@ export default function MegaKabanGame({ onClose }) {
         if (newLevel > level) {
           level = newLevel;
           levelElement.textContent = level;
-          currentItemSpeed = Math.min(gameSettings.maxItemSpeed, gameSettings.initialItemSpeed + (level - 1) * 0.4);
-          createParticles(canvas.width / 2, canvas.height / 2, '#FFD700', 35);
-          const el = gameRoot.querySelector('.level-indicator');
-          el.classList.add('active');
-          setTimeout(() => el.classList.remove('active'), 750);
+          currentItemSpeed = Math.min(
+            gameSettings.maxItemSpeed,
+            gameSettings.initialItemSpeed + (level - 1) * 0.4
+          );
+          createParticles(canvas.width / 2, canvas.height / 2, "#FFD700", 35);
+          const el = gameRoot.querySelector(".level-indicator");
+          el.classList.add("active");
+          setTimeout(() => el.classList.remove("active"), 750);
         }
       }
 
       function updateItems() {
         const sm = powerUps.slowmo.active ? 0.5 : 1;
-        [burgers, bombs, powerUpsList].forEach(list => {
+        [burgers, bombs, powerUpsList].forEach((list) => {
           for (let i = list.length - 1; i >= 0; i--) {
             const item = list[i];
             item.y += item.speed * sm;
@@ -723,7 +1060,10 @@ export default function MegaKabanGame({ onClose }) {
 
       function updateDifficulty(now) {
         if (now - lastSpeedIncrease > gameSettings.speedIncreaseInterval) {
-          currentItemSpeed = Math.min(gameSettings.maxItemSpeed, currentItemSpeed + gameSettings.speedIncreaseAmount);
+          currentItemSpeed = Math.min(
+            gameSettings.maxItemSpeed,
+            currentItemSpeed + gameSettings.speedIncreaseAmount
+          );
           lastSpeedIncrease = now;
         }
       }
@@ -732,9 +1072,9 @@ export default function MegaKabanGame({ onClose }) {
       let grassSpikes = [];
       function initDrawCache() {
         bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        bgGradient.addColorStop(0, '#081022');
-        bgGradient.addColorStop(0.45, '#111d3a');
-        bgGradient.addColorStop(1, '#0b2244');
+        bgGradient.addColorStop(0, "#081022");
+        bgGradient.addColorStop(0.45, "#111d3a");
+        bgGradient.addColorStop(1, "#0b2244");
         const groundY = getGroundY();
         grassSpikes = [];
         for (let i = 0; i < canvas.width; i += 9) {
@@ -749,9 +1089,9 @@ export default function MegaKabanGame({ onClose }) {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         drawStars();
         const groundY = getGroundY();
-        ctx.fillStyle = '#1c3d1c';
+        ctx.fillStyle = "#1c3d1c";
         ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
-        ctx.fillStyle = '#2f6b2f';
+        ctx.fillStyle = "#2f6b2f";
         for (const spike of grassSpikes) {
           ctx.fillRect(spike.x, groundY, 4, -spike.height);
         }
@@ -772,16 +1112,17 @@ export default function MegaKabanGame({ onClose }) {
             size: Math.random() * 1.3 + 0.5,
             opacity: Math.random() * 0.3 + 0.2,
             twinkleSpeed: Math.random() * 0.01 + 0.005,
-            twinklePhase: Math.random() * Math.PI * 2
+            twinklePhase: Math.random() * Math.PI * 2,
           });
         }
       }
 
       function drawStars() {
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = "white";
         for (const star of stars) {
           star.twinklePhase += star.twinkleSpeed;
-          ctx.globalAlpha = star.opacity * (Math.sin(star.twinklePhase) * 0.2 + 0.8);
+          ctx.globalAlpha =
+            star.opacity * (Math.sin(star.twinklePhase) * 0.2 + 0.8);
           ctx.beginPath();
           ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
           ctx.fill();
@@ -812,93 +1153,189 @@ export default function MegaKabanGame({ onClose }) {
         updateComboDisplay();
         draw();
         if (ts - lastSpawnTime > 16) {
-          if (Math.random() < gameSettings.burgerSpawnChance) createFallingItem('burger');
-          if (Math.random() < gameSettings.bombSpawnChance) createFallingItem('bomb');
-          if (Math.random() < gameSettings.powerUpSpawnChance) createFallingItem('powerup');
+          if (Math.random() < gameSettings.burgerSpawnChance)
+            createFallingItem("burger");
+          if (Math.random() < gameSettings.bombSpawnChance)
+            createFallingItem("bomb");
+          if (Math.random() < gameSettings.powerUpSpawnChance)
+            createFallingItem("powerup");
           lastSpawnTime = ts;
         }
         animationId = requestAnimationFrame(gameLoop);
       }
 
       function startGame() {
-        gameRoot.querySelector('#mainHeader').style.display = 'none';
-        score = 0; lives = 3; level = 1;
-        burgers = []; bombs = []; powerUpsList = []; particles = [];
+        gameRoot.querySelector("#mainHeader").style.display = "none";
+        score = 0;
+        lives = 3;
+        level = 1;
+        burgers = [];
+        bombs = [];
+        powerUpsList = [];
+        particles = [];
         currentItemSpeed = gameSettings.initialItemSpeed;
-        lastSpeedIncrease = 0; comboMultiplier = 1; maxCombo = 1; burgersCaught = 0;
-        frameCount = 0; screenShake = 0; lastBurgerTime = 0;
-        initStars(); initDrawCache();
+        lastSpeedIncrease = 0;
+        comboMultiplier = 1;
+        maxCombo = 1;
+        burgersCaught = 0;
+        frameCount = 0;
+        screenShake = 0;
+        lastBurgerTime = 0;
+        initStars();
+        initDrawCache();
         for (const key of Object.keys(powerUps)) {
           powerUps[key].active = false;
           powerUps[key].timeLeft = 0;
         }
-        [shieldIndicator, magnetIndicator, slowmoIndicator, doublePointsIndicator].forEach(el => {
-          el.classList.remove('active');
-          el.style.opacity = '0.5';
+        [
+          shieldIndicator,
+          magnetIndicator,
+          slowmoIndicator,
+          doublePointsIndicator,
+        ].forEach((el) => {
+          el.classList.remove("active");
+          el.style.opacity = "0.5";
         });
-        scoreElement.textContent = '0';
-        livesElement.textContent = '3'; livesElement.classList.remove('low');
-        levelElement.textContent = '1';
-        comboElement.textContent = '1x'; comboElement.style.color = '#fff'; comboElement.style.textShadow = 'none'; comboElement.style.transform = 'scale(1)';
-        comboDisplay.style.display = 'none';
+        scoreElement.textContent = "0";
+        livesElement.textContent = "3";
+        livesElement.classList.remove("low");
+        levelElement.textContent = "1";
+        comboElement.textContent = "1x";
+        comboElement.style.color = "#fff";
+        comboElement.style.textShadow = "none";
+        comboElement.style.transform = "scale(1)";
+        comboDisplay.style.display = "none";
         player.x = canvas.width / 2 - playerWidth / 2;
         player.y = getGroundY() - playerHeight - 3;
-        player.movingLeft = false; player.movingRight = false; player.tilt = 0;
-        startScreen.classList.remove('active');
-        gameOverScreen.classList.remove('active');
+        player.movingLeft = false;
+        player.movingRight = false;
+        player.tilt = 0;
+        startScreen.classList.remove("active");
+        gameOverScreen.classList.remove("active");
         gameRunning = true;
         animationId = requestAnimationFrame(gameLoop);
       }
 
+      async function handleGameOver(finalScore) {
+        try {
+          const tg = window.Telegram?.WebApp;
+          if (tg?.initDataUnsafe?.user?.id) {
+            const response = await fetch("/api/score/update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: tg.initDataUnsafe.user.id,
+                username: tg.initDataUnsafe.user.first_name,
+                score: finalScore,
+              }),
+            });
+
+            if (!response.ok) {
+              console.warn("Failed to save score:", await response.text());
+            }
+          } else {
+            console.warn("Telegram WebApp data unavailable — score not saved");
+          }
+        } catch (error) {
+          console.error("Error saving score:", error);
+        }
+      }
+
       function gameOver() {
-        gameRoot.querySelector('#mainHeader').style.display = 'block';
+        showMainHeader();
         gameRunning = false;
         cancelAnimationFrame(animationId);
+
         finalScoreElement.textContent = score;
         maxComboElement.textContent = maxCombo.toFixed(1);
         burgersCaughtElement.textContent = burgersCaught;
         finalLevelElement.textContent = level;
-        gameOverScreen.classList.add('active');
-        if (tg?.sendData) {
-          tg.sendData(JSON.stringify({ score, maxCombo, burgersCaught, level }));
-        }
-        if (onClose) onClose();
+        gameOverScreen.classList.add("active");
+
+        handleGameOver(score).then(() => {
+          if (
+            typeof window !== "undefined" &&
+            window.Telegram?.WebApp?.sendData
+          ) {
+            window.Telegram.WebApp.sendData(
+              JSON.stringify({
+                score: score,
+                maxCombo: maxCombo,
+                burgersCaught: burgersCaught,
+                level: level,
+              })
+            );
+          }
+          if (onClose) onClose();
+        });
       }
 
       function setupTouchControls() {
-        const leftStart = e => { e.preventDefault(); player.movingLeft = true; };
-        const leftEnd = e => { e.preventDefault(); player.movingLeft = false; };
-        const rightStart = e => { e.preventDefault(); player.movingRight = true; };
-        const rightEnd = e => { e.preventDefault(); player.movingRight = false; };
-        [leftBtn, rightBtn].forEach(btn => {
-          btn.addEventListener('touchstart', btn === leftBtn ? leftStart : rightStart);
-          btn.addEventListener('touchend', btn === leftBtn ? leftEnd : rightEnd);
-          btn.addEventListener('touchcancel', btn === leftBtn ? leftEnd : rightEnd);
-          btn.addEventListener('mousedown', btn === leftBtn ? leftStart : rightStart);
-          btn.addEventListener('mouseup', btn === leftBtn ? leftEnd : rightEnd);
-          btn.addEventListener('mouseleave', btn === leftBtn ? leftEnd : rightEnd);
+        const leftStart = (e) => {
+          e.preventDefault();
+          player.movingLeft = true;
+        };
+        const leftEnd = (e) => {
+          e.preventDefault();
+          player.movingLeft = false;
+        };
+        const rightStart = (e) => {
+          e.preventDefault();
+          player.movingRight = true;
+        };
+        const rightEnd = (e) => {
+          e.preventDefault();
+          player.movingRight = false;
+        };
+        [leftBtn, rightBtn].forEach((btn) => {
+          btn.addEventListener(
+            "touchstart",
+            btn === leftBtn ? leftStart : rightStart
+          );
+          btn.addEventListener(
+            "touchend",
+            btn === leftBtn ? leftEnd : rightEnd
+          );
+          btn.addEventListener(
+            "touchcancel",
+            btn === leftBtn ? leftEnd : rightEnd
+          );
+          btn.addEventListener(
+            "mousedown",
+            btn === leftBtn ? leftStart : rightStart
+          );
+          btn.addEventListener("mouseup", btn === leftBtn ? leftEnd : rightEnd);
+          btn.addEventListener(
+            "mouseleave",
+            btn === leftBtn ? leftEnd : rightEnd
+          );
         });
       }
 
       function setupKeyboardControls() {
-        const keyDown = e => {
+        const keyDown = (e) => {
           if (!gameRunning) return;
-          if (e.key === 'ArrowLeft' || e.key === 'a') player.movingLeft = true;
-          else if (e.key === 'ArrowRight' || e.key === 'd') player.movingRight = true;
+          if (e.key === "ArrowLeft" || e.key === "a") player.movingLeft = true;
+          else if (e.key === "ArrowRight" || e.key === "d")
+            player.movingRight = true;
         };
-        const keyUp = e => {
-          if (e.key === 'ArrowLeft' || e.key === 'a') player.movingLeft = false;
-          else if (e.key === 'ArrowRight' || e.key === 'd') player.movingRight = false;
+        const keyUp = (e) => {
+          if (e.key === "ArrowLeft" || e.key === "a") player.movingLeft = false;
+          else if (e.key === "ArrowRight" || e.key === "d")
+            player.movingRight = false;
         };
-        document.addEventListener('keydown', keyDown);
-        document.addEventListener('keyup', keyUp);
+        document.addEventListener("keydown", keyDown);
+        document.addEventListener("keyup", keyUp);
       }
 
       function resizeGameCanvas() {
-        const container = gameRoot.querySelector('.canvas-container');
-        const controls = gameRoot.querySelector('.controls');
+        const container = gameRoot.querySelector(".canvas-container");
+        const controls = gameRoot.querySelector(".controls");
         const aspect = 3 / 4;
-        let width = Math.min(700, container?.offsetWidth || window.innerWidth * 0.98);
+        let width = Math.min(
+          700,
+          container?.offsetWidth || window.innerWidth * 0.98
+        );
         let maxH = window.innerHeight - (controls?.offsetHeight || 0);
         let height = Math.round(width / aspect);
         if (height > maxH) {
@@ -907,8 +1344,8 @@ export default function MegaKabanGame({ onClose }) {
         }
         canvas.width = width;
         canvas.height = height;
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
         initDrawCache();
         initStars();
         player.width = 60;
@@ -920,22 +1357,25 @@ export default function MegaKabanGame({ onClose }) {
       initStars();
       setupTouchControls();
       setupKeyboardControls();
-      startBtn.addEventListener('click', startGame);
-      restartBtn.addEventListener('click', startGame);
+      startBtn.addEventListener("click", startGame);
+      restartBtn.addEventListener("click", startGame);
 
       const setViewportHeight = () => {
-        document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        document.documentElement.style.setProperty(
+          "--vh",
+          `${window.innerHeight * 0.01}px`
+        );
       };
       setViewportHeight();
-      window.addEventListener('resize', setViewportHeight);
-      window.addEventListener('orientationchange', setViewportHeight);
-      window.addEventListener('resize', resizeGameCanvas);
-      window.addEventListener('orientationchange', resizeGameCanvas);
-      document.addEventListener('DOMContentLoaded', resizeGameCanvas);
-      window.addEventListener('load', resizeGameCanvas);
+      window.addEventListener("resize", setViewportHeight);
+      window.addEventListener("orientationchange", setViewportHeight);
+      window.addEventListener("resize", resizeGameCanvas);
+      window.addEventListener("orientationchange", resizeGameCanvas);
+      document.addEventListener("DOMContentLoaded", resizeGameCanvas);
+      window.addEventListener("load", resizeGameCanvas);
       resizeGameCanvas();
 
-      document.addEventListener('visibilitychange', () => {
+      document.addEventListener("visibilitychange", () => {
         if (document.hidden && gameRunning) {
           gameRunning = false;
           cancelAnimationFrame(animationId);
@@ -945,13 +1385,17 @@ export default function MegaKabanGame({ onClose }) {
         }
       });
 
-      gameRoot.querySelector('#mainHeader').style.display = 'block';
+      gameRoot.querySelector("#mainHeader").style.display = "block";
     };
 
     runGameScript();
-    return () => {
-    };
+    return () => {};
   }, []);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+    />
+  );
 }
